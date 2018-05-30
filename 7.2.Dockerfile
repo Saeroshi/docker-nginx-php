@@ -22,6 +22,7 @@ ARG NGINX_CONF=" \
     --lock-path=/nginx/run/nginx.lock \
     --with-threads \
     --with-file-aio \
+    --with-http_v2_module \
     --without-http_geo_module \
     --without-http_autoindex_module \
     --without-http_split_clients_module \
@@ -189,12 +190,4 @@ RUN NB_CORES=${BUILD_CORES-$(getconf _NPROCESSORS_CONF)} \
  && docker-php-ext-install ${PHP_EXT_LIST} \
  && apk del ${BUILD_DEPS} \
  && rm -rf /tmp/* /var/cache/apk/* /usr/src/* \
- && mkdir -p /nginx/logs /nginx/run /php/php-fpm.d /php/logs /php/run /php/session \
- && mkdir -p /httpdocs /logs /nginx/sites-enabled /crontabs \
- && chmod +x /usr/local/bin/run.sh /etc/s6.d/*/* /etc/s6.d/.s6-svscan/*
-
-VOLUME /httpdocs /logs /nginx/sites-enabled
-
-EXPOSE 8888
-
-CMD ["run.sh"]
+ && mkdir -p /nginx/logs /nginx/run /nginx/sites-enabled /php/php-fpm.d /php/logs /php/run /php/session

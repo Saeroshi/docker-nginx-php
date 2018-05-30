@@ -9,7 +9,7 @@ INSTANCE = default
 .PHONY: build push shell run start stop rm release
 
 build:
-	docker build -t $(NS)/$(REPO):$(VERSION) .
+	docker build -f $(VERSION).Dockerfile -t $(NS)/$(REPO):$(VERSION) .
 
 push:
 	docker push $(NS)/$(REPO):$(VERSION)
