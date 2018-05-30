@@ -1,0 +1,39 @@
+#!/bin/sh
+
+export NGINX_WORKER_CONNECTIONS
+export NGINX_MAX_BODY_SIZE
+
+export PHP_POST_MAX_SIZE
+export PHP_UPLOAD_MAX_FILESIZE
+export PHP_MEMORY_LIMIT
+export PHP_TIMEZONE
+export PHP_DISPLAY_ERRORS
+export PHP_DISPLAY_STARTUP_ERRORS
+
+NGINX_WORKER_CONNECTIONS=${NGINX_WORKER_CONNECTIONS:-2048}
+NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE:-1024M}
+
+PHP_POST_MAX_SIZE=${PHP_POST_MAX_SIZE:-1024M}
+PHP_UPLOAD_MAX_FILESIZE=${PHP_UPLOAD_MAX_FILESIZE:-1024M}
+PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-256M}
+PHP_TIMEZONE=${PHP_TIMEZONE:-'Europe/Paris'}
+PHP_DISPLAY_ERRORS=${PHP_DISPLAY_ERRORS:-Off}
+PHP_DISPLAY_STARTUP_ERRORS=${PHP_DISPLAY_STARTUP_ERRORS:-Off}
+
+
+
+sed -i -e "s|<NGINX_WORKER_CONNECTIONS>|${NGINX_WORKER_CONNECTIONS}|g" \
+       -e "s|<NGINX_MAX_BODY_SIZE>|${NGINX_MAX_BODY_SIZE}|g" /nginx/conf/nginx.conf
+
+sid -i -e "s|<PHP_POST_MAX_SIZE>|${PHP_POST_MAX_SIZE}|g" \
+       -e "s|<PHP_UPLOAD_MAX_FILESIZE>|${PHP_UPLOAD_MAX_FILESIZE}|g" \
+       -e "s|<PHP_MEMORY_LIMIT>|${PHP_MEMORY_LIMIT}|g" \
+       -e "s|<PHP_TIMEZONE>|${PHP_TIMEZONE}|g" \
+       -e "s|<PHP_DISPLAY_ERRORS>|${PHP_DISPLAY_ERRORS}|g" \
+       -e "s|<PHP_DISPLAY_STARTUP_ERRORS>|${PHP_DISPLAY_STARTUP_ERRORS}|g" /php/etc/php-fpm.conf
+
+id -g http-data || addgroup -g $GID -S http-data
+id -u http-data || adduser -h /httpdocs -S -D -H -u $UID  http-data
+
+chown -R $UID:$GID /var/log /php /nginx /tmp /etc/s6.d /logs /httpdocs /crontabs
+exec su-exec $UID:$GID /bin/s6-svscan /etc/s6.d
