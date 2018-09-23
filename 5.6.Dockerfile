@@ -1,9 +1,9 @@
-FROM alpine:3.7
+FROM alpine:3.8
 
 ARG BUILD_CORES
 
 ARG NGINX_VER=1.14.0
-ARG PHP_VER=7.2.10
+ARG PHP_VER=5.6.38
 ARG LIBICONV_VERSION=1.15
 
 LABEL description="nginx + php image based on Alpine" \
@@ -81,6 +81,7 @@ ARG PHP_EXT_LIST=" \
     fileinfo \
     bz2 \
     intl \
+    mcrypt \
     openssl \
     ldap \
     simplexml \
@@ -94,6 +95,7 @@ ARG CUSTOM_BUILD_PKGS=" \
     freetype-dev \
     openldap-dev \
     gmp-dev \
+    libmcrypt-dev \
     icu-dev \
     postgresql-dev \
     libpng-dev \
@@ -112,6 +114,7 @@ ARG CUSTOM_PKGS=" \
     freetype \
     openldap \
     gmp \
+    libmcrypt \
     bzip2-dev \
     icu \
     libpq \
